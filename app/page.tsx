@@ -1,37 +1,15 @@
-"use client"
+import { useEffect, useState } from "react";
+import { redirect, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+export default async function Home() {
+  const supabase = await createClient();
+  const session = await supabase.auth.getSession();
 
-export default function Home() {
-  const router = useRouter()
-  const [isChecking, setIsChecking] = useState(true)
-
-  useEffect(() => {
-    const checkAuth = () => {
-      try {
-        const currentUser = localStorage.getItem("currentUser")
-
-        if (currentUser) {
-          console.log("[v0] User found, redirecting to dashboard")
-          router.push("/dashboard")
-        } else {
-          console.log("[v0] No user found, redirecting to login")
-          router.push("/login")
-        }
-      } catch (error) {
-        console.error("[v0] Error checking auth:", error)
-        router.push("/login")
-      } finally {
-        setIsChecking(false)
-      }
-    }
-
-    checkAuth()
-  }, [router])
-
-  if (!isChecking) {
-    return null
+  if (session) {
+    redirect("/dashboard");
+  } else {
+    redirect("/login");
   }
 
   return (
@@ -41,5 +19,5 @@ export default function Home() {
         <p className="text-gray-600">Loading...</p>
       </div>
     </div>
-  )
+  );
 }
