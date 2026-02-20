@@ -1,13 +1,10 @@
-// The app will use client-side authentication checks instead
-// Re-enable this after Supabase Auth is fully configured
-
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
+import { env } from "@/env";
+import { updateSession } from "./lib/supabase/middleware";
 
 export async function proxy(request: NextRequest) {
-  // Allow all requests to pass through
-  // Authentication will be handled client-side
-  return NextResponse.next();
+  return await updateSession(request);
 }
 
 export const config = {
