@@ -1,4 +1,4 @@
-const DEMO_USERS = [
+export const DEMO_USERS = [
   {
     id: "demo-admin",
     email: "admin@doys.gov.gm",
@@ -33,7 +33,7 @@ const DEMO_USERS = [
   },
 ];
 
-const youthPopulationByLGA = [
+export const youthPopulationByLGA = [
   { name: "Banjul", value: 10817 },
   { name: "Kanifing", value: 156992 },
   { name: "Brikama", value: 459860 },
@@ -44,12 +44,12 @@ const youthPopulationByLGA = [
   { name: "Basse", value: 89034 },
 ];
 
-const youthByResidence = [
+export const youthByResidence = [
   { name: "Urban", value: 560787 },
   { name: "Rural", value: 344629 },
 ];
 
-const youthWithDisabilities = [
+export const youthWithDisabilities = [
   { name: "Seeing", value: 1675 },
   { name: "Hearing", value: 1692 },
   { name: "Physical", value: 1757 },
@@ -58,7 +58,7 @@ const youthWithDisabilities = [
   { name: "Speech", value: 1749 },
 ];
 
-const youthWithoutDisabilities = [
+export const youthWithoutDisabilities = [
   { name: "15-19", value: 285807 - 1050 },
   { name: "20-24", value: 242231 - 1100 },
   { name: "25-29", value: 192893 - 1123 },
@@ -66,14 +66,14 @@ const youthWithoutDisabilities = [
   { name: "35", value: 34883 - 1000 },
 ];
 
-const youthMigrationData = [
+export const youthMigrationData = [
   { name: "Voluntary Return", value: 450 },
   { name: "Deportation", value: 320 },
   { name: "Irregular Migration", value: 580 },
   { name: "Regular Migration", value: 230 },
 ];
 
-const COLORS = [
+export const COLORS = [
   "#0088FE",
   "#00C49F",
   "#FFBB28",
