@@ -32,6 +32,14 @@ import {
 } from "lucide-react";
 import { useActivity } from "@/contexts/activity-context";
 import { createClient } from "@/lib/supabase/client";
+import {
+  youthMigrationData,
+  youthPopulationByLGA,
+  youthWithDisabilities,
+  youthWithoutDisabilities,
+  COLORS,
+  youthByResidence,
+} from "@/lib/constants";
 
 export default function DashboardPage() {
   const { trackActivity } = useActivity();
