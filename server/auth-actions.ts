@@ -1,9 +1,6 @@
 "use server";
 
-import { users } from "@/auth-schema";
-import { db } from "@/db";
 import { auth } from "@/lib/auth";
-import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -15,18 +12,8 @@ export const getCurrentUser = async () => {
   if (!session) {
     redirect("/login");
   }
-
-  const currentUser = await db.query.users.findFirst({
-    where: eq(users.id, session.user.id),
-  });
-
-  if (!currentUser) {
-    redirect("/login");
-  }
-
   return {
-    ...session,
-    currentUser,
+    user: session.user,
   };
 };
 
