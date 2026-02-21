@@ -1,8 +1,6 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
+"use client";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,66 +8,47 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { User, Settings, LogOut, Shield, Mail, Building } from "lucide-react"
-import { loadFromLocalStorage, removeFromLocalStorage } from "@/lib/local-storage"
-import { RoleBadge } from "./role-badge"
+} from "@/components/ui/dropdown-menu";
+import { authClient } from "@/lib/auth-client";
+import { Building, LogOut, Mail, Settings, Shield, User } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { RoleBadge } from "./role-badge";
 
-interface UserData {
-  id: string
-  email: string
-  name: string
-  role: "admin" | "data_entry" | "viewer"
-}
+type CurrentUser = (typeof authClient.$Infer)["Session"]["user"];
 
-export function UserProfile() {
-  const router = useRouter()
-  const [currentUser, setCurrentUser] = useState<UserData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+export function UserProfile({ currentUser }: { currentUser: CurrentUser }) {
+  const router = useRouter();
 
-  useEffect(() => {
-    const userData = loadFromLocalStorage<UserData | null>("currentUser", null)
-    setCurrentUser(userData)
-    setIsLoading(false)
-  }, [])
-
-  const handleLogout = () => {
-    removeFromLocalStorage("currentUser")
-    router.push("/login")
-  }
-
-  const handleProfileClick = () => {
-    router.push("/profile")
-  }
-
-  const handleSettingsClick = () => {
-    router.push("/settings")
+  async function handleLogout() {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/login"); // redirect to login page
+        },
+        onError: (error) => {
+          toast.error("Error logging out, please try again.");
+        },
+      },
+    });
   }
 
   const getInitials = (name: string) => {
-    if (!name) return "U"
+    if (!name) return "U";
     return name
       .split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .slice(0, 2)
-  }
-
-  if (isLoading || !currentUser) {
-    return (
-      <div className="flex items-center justify-center p-4">
-        <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-      </div>
-    )
-  }
+      .slice(0, 2);
+  };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <Avatar className="h-10 w-10">
+          <Avatar className="h-10 w-10 cursor-pointer">
             <AvatarFallback className="bg-blue-500 text-white font-semibold">
               {getInitials(currentUser.name)}
             </AvatarFallback>
@@ -86,7 +65,9 @@ export function UserProfile() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{currentUser.name || "User"}</p>
+                <p className="text-sm font-medium leading-none">
+                  {currentUser.name || "User"}
+                </p>
                 <div className="flex items-center space-x-1">
                   <Mail className="h-3 w-3 text-gray-500" />
                   <p className="text-xs text-gray-500">{currentUser.email}</p>
@@ -97,18 +78,27 @@ export function UserProfile() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-500">Role:</span>
-                <RoleBadge role={currentUser.role} />
+                <RoleBadge
+                  role={
+                    (currentUser.role as "admin" | "data_entry" | "viewer") ||
+                    "viewer"
+                  }
+                />
               </div>
 
               <div className="flex items-center space-x-1">
                 <Building className="h-3 w-3 text-gray-500" />
-                <span className="text-xs text-gray-500">Department of Youth and Sports</span>
+                <span className="text-xs text-gray-500">
+                  Department of Youth and Sports
+                </span>
               </div>
 
               {currentUser.role === "admin" && (
                 <div className="flex items-center space-x-1">
                   <Shield className="h-3 w-3 text-red-500" />
-                  <span className="text-xs text-red-600 font-medium">Administrator Privileges</span>
+                  <span className="text-xs text-red-600 font-medium">
+                    Administrator Privileges
+                  </span>
                 </div>
               )}
 
@@ -122,14 +112,18 @@ export function UserProfile() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="cursor-pointer" onClick={handleProfileClick}>
-          <User className="mr-2 h-4 w-4" />
-          <span>Profile Settings</span>
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <Link href="/profile" className="flex gap-2">
+            <User className="mr-2 h-4 w-4" />
+            <span>Profile Settings</span>
+          </Link>
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="cursor-pointer" onClick={handleSettingsClick}>
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Account Settings</span>
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <Link href="/settings" className="flex gap-2">
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Account Settings</span>
+          </Link>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
@@ -143,5 +137,5 @@ export function UserProfile() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
