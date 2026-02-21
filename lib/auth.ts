@@ -1,56 +1,67 @@
-import { createClient as createServerClient } from "@/lib/supabase/server"
+import * as schema from "@/auth-schema";
+import { db } from "@/db";
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { admin as adminPlugin } from "better-auth/plugins/admin";
+import { nextCookies } from "better-auth/next-js";
 
-export type UserRole = "admin" | "data_entry" | "viewer"
+import { ac, admin, dataEntry, viewer } from "./permissions";
 
-export interface User {
-  id: string
-  email: string
-  name: string | null
-  role: UserRole
-  created_at: string
-  updated_at: string
-}
+import { VerifyEmail } from "@/components/emails/verify-email";
+import { env } from "@/env";
+import { Resend } from "resend";
 
-/**
- * Get the current authenticated user with their role
- */
-export async function getCurrentUser(): Promise<User | null> {
-  const supabase = await createServerClient()
-
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
-
-  if (!authUser) {
-    return null
-  }
-
-  const { data: userData } = await supabase.from("users").select("*").eq("id", authUser.id).single()
-
-  return userData
-}
-
-/**
- * Check if user has required role
- */
-export async function hasRole(requiredRole: UserRole | UserRole[]): Promise<boolean> {
-  const user = await getCurrentUser()
-  if (!user) return false
-
-  const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole]
-  return roles.includes(user.role)
-}
-
-/**
- * Check if user can edit data (admin or data_entry)
- */
-export async function canEditData(): Promise<boolean> {
-  return hasRole(["admin", "data_entry"])
-}
-
-/**
- * Check if user is admin
- */
-export async function isAdmin(): Promise<boolean> {
-  return hasRole("admin")
-}
+const resend = new Resend(env.RESEND_API_KEY);
+export const auth = betterAuth({
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    usePlural: true,
+    schema: schema,
+  }),
+  emailVerification: {
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      try {
+        await resend.emails.send({
+          from: "onboarding@resend.dev",
+          to: user.email,
+          subject: "Verify your email",
+          react: VerifyEmail({
+            username: user.name,
+            verifyUrl: url,
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to send verification email:", error);
+        throw error;
+      }
+    },
+  },
+  emailAndPassword: {
+    enabled: true,
+    minPasswordLength: 8,
+    maxPasswordLength: 20,
+    requireEmailVerification: true,
+  },
+  users: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: true,
+      },
+    },
+  },
+  plugins: [
+    adminPlugin({
+      ac,
+      roles: { admin, dataEntry, viewer },
+      defaultRole: "viewer" as const,
+    }),
+  ],
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // Cache duration in seconds
+    },
+  },
+});

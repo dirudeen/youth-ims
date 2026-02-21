@@ -1,66 +1,26 @@
-import { createClient } from "@/lib/supabase/server"
+import { createAccessControl } from "better-auth/plugins/access";
+import { defaultStatements, adminAc } from "better-auth/plugins/admin/access";
 
-export type UserRole = "admin" | "data_entry" | "viewer"
+const statements = {
+  ...defaultStatements,
+  data: ["create", "view", "update", "delete", "list"],
+} as const;
 
-export interface UserPermissions {
-  canView: boolean
-  canEdit: boolean
-  canDelete: boolean
-  canManageUsers: boolean
-  isAdmin: boolean
-}
+export const ac = createAccessControl(statements);
 
-/**
- * Get user permissions based on their role
- */
-export async function getUserPermissions(): Promise<UserPermissions | null> {
-  const supabase = await createClient()
+export const admin = ac.newRole({
+  ...adminAc.statements,
+  data: ["create", "view", "update", "delete", "list"],
+});
 
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
+export const dataEntry = ac.newRole({
+  data: ["create", "view", "update", "delete", "list"],
+  user: [],
+  session: [],
+});
 
-  if (!authUser) {
-    return null
-  }
-
-  const { data: userData } = await supabase.from("users").select("role").eq("id", authUser.id).single()
-
-  if (!userData) {
-    return null
-  }
-
-  const role = userData.role as UserRole
-
-  return {
-    canView: true, // All authenticated users can view
-    canEdit: role === "admin" || role === "data_entry",
-    canDelete: role === "admin" || role === "data_entry",
-    canManageUsers: role === "admin",
-    isAdmin: role === "admin",
-  }
-}
-
-/**
- * Check if current user can edit data
- */
-export async function canEditData(): Promise<boolean> {
-  const permissions = await getUserPermissions()
-  return permissions?.canEdit ?? false
-}
-
-/**
- * Check if current user is admin
- */
-export async function isAdmin(): Promise<boolean> {
-  const permissions = await getUserPermissions()
-  return permissions?.isAdmin ?? false
-}
-
-/**
- * Check if current user can manage other users
- */
-export async function canManageUsers(): Promise<boolean> {
-  const permissions = await getUserPermissions()
-  return permissions?.canManageUsers ?? false
-}
+export const viewer = ac.newRole({
+  data: ["view", "list"],
+  user: [],
+  session: [],
+});
