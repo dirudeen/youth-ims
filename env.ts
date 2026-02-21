@@ -18,6 +18,8 @@ export const env = createEnv({
     BETTER_AUTH_SECRET: z.string().min(1),
     BETTER_AUTH_URL: z.string().min(1),
     RESEND_API_KEY: z.string().min(1),
+    EMAIL_SENDER_NAME: z.string().min(1),
+    EMAIL_SENDER_ADDRESS: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_BETTER_AUTH_URL: z.string().min(1),
@@ -48,6 +50,8 @@ export const env = createEnv({
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     NEXT_PUBLIC_BETTER_AUTH_URL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
+    EMAIL_SENDER_NAME: process.env.EMAIL_SENDER_NAME,
+    EMAIL_SENDER_ADDRESS: process.env.EMAIL_SENDER_ADDRESS,
   },
 
   // For Next.js >= 13.4.4, you only need to destructure client variables:
