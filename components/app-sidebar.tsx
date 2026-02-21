@@ -190,9 +190,7 @@ export function AppSidebar() {
             {open && (
               <div className="text-center">
                 <div>Ministry of Youth & Sports</div>
-                <span>
-                  © {new Date().getFullYear()} Ministry of Youth & Sports
-                </span>
+                <span>© {new Date().getFullYear()}</span>
               </div>
             )}
           </SidebarMenuItem>
