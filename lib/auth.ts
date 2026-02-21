@@ -23,7 +23,7 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url }) => {
       try {
         await resend.emails.send({
-          from: "onboarding@resend.dev",
+          from: `${env.EMAIL_SENDER_NAME} <${env.EMAIL_SENDER_ADDRESS}>`,
           to: user.email,
           subject: "Verify your email",
           react: VerifyEmail({
@@ -57,6 +57,7 @@ export const auth = betterAuth({
       roles: { admin, dataEntry, viewer },
       defaultRole: "viewer" as const,
     }),
+    nextCookies(),
   ],
   session: {
     cookieCache: {
