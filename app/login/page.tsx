@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
       <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center">
         {/* Left side - Branding */}
         <div className="hidden lg:flex flex-col items-center justify-center space-y-8">
@@ -22,7 +22,7 @@ export default function LoginPage() {
               <p className="text-xl text-gray-600">
                 Information Management System
               </p>
-              <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-indigo-600 mx-auto rounded-full"></div>
+              <div className="w-16 h-1 bg-linear-to-r from-blue-500 to-indigo-600 mx-auto rounded-full"></div>
             </div>
           </div>
           <div className="text-center space-y-4 max-w-md">
@@ -38,9 +38,15 @@ export default function LoginPage() {
               <span>Secure • Reliable • Efficient</span>
             </div>
           </div>
-          <p className="text-red-800 leading-relaxed">
-            Supported by: Actionaid International The Gambia
-          </p>
+          <div className="text-center">
+            <p className="text-red-800 leading-relaxed">
+              Supported by: Actionaid International The Gambia
+            </p>
+            <p className="text-red-800 leading-relaxed">
+              Financed through: The Youth Promotion Initiative (YPI), a
+              Peacebuilding Fund (PBF) Project
+            </p>
+          </div>
         </div>
 
         {/* Right side - Login Form */}
