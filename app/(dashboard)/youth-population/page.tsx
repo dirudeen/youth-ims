@@ -1,7 +1,6 @@
-import { getServerSideSession } from "@/lib/auth-helper/get-serverside-session";
+import { getServerSideSession, canEditDataHelperFn } from "@/lib/auth-helper";
 import { redirect } from "next/navigation";
 import YouthPopulationTableWrapper from "./_components/youth-population-table-wrapper";
-import { canEditDataHelperFn } from "@/lib/auth-helper/can-edit-data-helper";
 
 export const revalidate = 60;
 export default async function YouthPopulationPage() {

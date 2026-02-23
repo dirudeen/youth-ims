@@ -1,9 +1,6 @@
-import type React from "react";
+import { getServerSideSession } from "@/lib/auth-helper";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { ShieldCheck } from "lucide-react";
-import Link from "next/link";
-import { getServerSideSession } from "@/lib/auth-helper/get-serverside-session";
+import type React from "react";
 
 interface AuthCheckProps {
   children: React.ReactNode;

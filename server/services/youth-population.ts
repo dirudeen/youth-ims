@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { youthPopulation } from "@/db/schema";
-import { getServerSideSession } from "@/lib/auth-helper/get-serverside-session";
+import { getServerSideSession } from "@/lib/auth-helper";
 import { asc } from "drizzle-orm";
 import { redirect } from "next/navigation";
 

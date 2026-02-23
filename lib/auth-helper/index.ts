@@ -7,3 +7,7 @@ export const getServerSideSession = cache(async () => {
     headers: await headers(),
   });
 });
+
+export function canEditDataHelperFn(role: string) {
+  return role === "admin" || role === "dataEntry";
+}

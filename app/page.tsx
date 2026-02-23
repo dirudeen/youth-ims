@@ -1,7 +1,5 @@
-// import { useEffect, useState } from "react";
+import { getServerSideSession } from "@/lib/auth-helper";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { getServerSideSession } from "@/lib/auth-helper/get-serverside-session";
 
 export default async function Home() {
   const session = await getServerSideSession();
