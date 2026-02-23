@@ -1,14 +1,27 @@
 import z from "zod";
+const requiredNumber = (fieldName: string) =>
+  z
+    .string()
+    .min(1, `${fieldName} is required`)
+    .refine((val) => !Number.isNaN(val), {
+      message: `${fieldName} must be a valid number`,
+    })
+    .refine((val) => Number(val) >= 0, {
+      message: `${fieldName} cannot be negative`,
+    });
 
 export const youthPopulationSchema = z.object({
   lga: z.string().min(1, "LGA is required"),
-  totalPopulation: z.string().min(1, "Total Population is required"),
-  youthPopulation: z.string().min(1, "Youth Population is required"),
-  year: z.string().min(1, "Year is required"),
-  maleYouth: z.string().min(1, "Male Youth is required"),
-  femaleYouth: z.string().min(1, "Female Youth is required"),
-  urbanYouth: z.string().min(1, "Urban Youth is required"),
-  ruralYouth: z.string().min(1, "Rural Youth is required"),
+
+  totalPopulation: requiredNumber("Total Population"),
+  youthPopulation: requiredNumber("Youth Population"),
+  year: requiredNumber("Year"),
+  maleYouth: requiredNumber("Male Youth"),
+  femaleYouth: requiredNumber("Female Youth"),
+  urbanYouth: requiredNumber("Urban Youth"),
+  ruralYouth: requiredNumber("Rural Youth"),
 });
 
 export type YouthPopulationFormValues = z.infer<typeof youthPopulationSchema>;
+
+// Todo : Add specific validation for each field
