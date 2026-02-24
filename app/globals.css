@@ -141,3 +141,44 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes honeycomb {
+  0%, 20%, 80%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  30%, 70% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.honeycomb-cell {
+  position: absolute;
+  width: 24px;
+  height: 12px;
+  margin-top: 6px;
+  background: #f3f3f3;
+  animation: honeycomb 2.1s infinite backwards;
+}
+
+.honeycomb-cell::before,
+.honeycomb-cell::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+}
+
+.honeycomb-cell::after {
+  top: -6px;
+  border-bottom: 6px solid #f3f3f3;
+}
+
+.honeycomb-cell::before {
+  bottom: -6px;
+  border-top: 6px solid #f3f3f3;
+}
