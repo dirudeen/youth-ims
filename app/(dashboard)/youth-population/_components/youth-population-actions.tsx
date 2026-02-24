@@ -14,7 +14,7 @@ export default function YouthPopulationActions() {
       <DataImportDialog tableName="youth_population" />
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogTrigger asChild>
-          <Button className="flex items-center gap-1" variant="outline">
+          <Button className="flex items-center gap-1" variant="default">
             <PlusCircle className="mr-2 h-4 w-4" />
             Add New Entry
           </Button>
