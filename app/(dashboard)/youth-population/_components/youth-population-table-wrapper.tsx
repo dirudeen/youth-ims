@@ -2,6 +2,7 @@ import { getYouthPopulation } from "@/server/services/youth-population";
 import { Suspense } from "react";
 import YouthPopulationActions from "./youth-population-actions";
 import { YouthPopulationTable } from "./youth-population-table";
+import { YouthPopulationTableSkeleton } from "./youth-population-table-skeleton";
 
 interface Props {
   canEditData: boolean;
@@ -26,8 +27,4 @@ export default async function YouthPopulationTableWrapper({
       </Suspense>
     </div>
   );
-}
-
-function YouthPopulationTableSkeleton() {
-  return <div>Loading....</div>;
 }
