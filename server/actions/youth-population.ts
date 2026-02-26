@@ -143,3 +143,76 @@ export async function deleteYouthPopulation(data: {
     return fail("An error occurred while deleting the record.");
   }
 }
+
+type BulkDeleteYouthPopulationInput = {
+  id: number;
+  version: number;
+}[];
+
+export async function bulkDeleteYouthPopulation(
+  records: BulkDeleteYouthPopulationInput,
+) {
+  const session = await getServerSideSession();
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    if (!records || records.length === 0) {
+      return {
+        success: false,
+        message: "No records provided for deletion.",
+      };
+    }
+
+    const result = await db.transaction(async (tx) => {
+      let deletedCount = 0;
+
+      for (const record of records) {
+        const deleted = await tx
+          .delete(youthPopulation)
+          .where(
+            and(
+              eq(youthPopulation.id, record.id),
+              eq(youthPopulation.version, record.version),
+            ),
+          )
+          .returning({ id: youthPopulation.id });
+
+        if (deleted.length > 0) {
+          deletedCount++;
+        }
+      }
+
+      return deletedCount;
+    });
+
+    if (result !== records.length) {
+      return {
+        success: false,
+        message:
+          "Some records were modified or already deleted. Please refresh and try again.",
+        requested: records.length,
+        deleted: result,
+      };
+    }
+    revalidatePath("/youth-population");
+
+    return {
+      success: true,
+      message: "Records deleted successfully.",
+      requested: records.length,
+      deleted: result,
+    };
+  } catch (error) {
+    // 🔒 Log full error internally (important)
+    console.error("Bulk delete error:", error);
+
+    // 🚫 Never send raw DB error to frontend
+    return {
+      success: false,
+      message:
+        "An unexpected error occurred while deleting records. Please try again later.",
+    };
+  }
+}
