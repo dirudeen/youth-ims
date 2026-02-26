@@ -1,14 +1,13 @@
 "use client";
 
 import { DataTable } from "@/components/data-table";
-import { useToast } from "@/hooks/use-toast";
-import { optimisticUpdate } from "@/lib/optimistic-updates";
-import { useState } from "react";
 import { getColumns } from "./youth-population-columns";
 import { YouthPopulationDialogs } from "./youth-population-dialogs";
 
 import type { YouthPopulationType } from "@/db/schema";
+import { bulkDeleteYouthPopulation } from "@/server/actions/youth-population";
 import { useYouthPopulationStore } from "@/store/youth-population-store";
+import { toast } from "sonner";
 
 interface YouthPopulationClientProps {
   youthPopulation: YouthPopulationType[];
@@ -19,19 +18,8 @@ export function YouthPopulationTable({
   youthPopulation,
   canEditData,
 }: YouthPopulationClientProps) {
-  const { data, setData, setSelectedItem, setEditOpen, setDeleteOpen } =
+  const { setSelectedItem, setEditOpen, setDeleteOpen } =
     useYouthPopulationStore();
-  const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    lga: "",
-    totalPopulation: "",
-    youthPopulation: "",
-    youthShare: "",
-    maleYouth: "",
-    femaleYouth: "",
-    urbanYouth: "",
-    ruralYouth: "",
-  });
 
   const handleEdit = (item: YouthPopulationType) => {
     setSelectedItem(item);
@@ -39,38 +27,20 @@ export function YouthPopulationTable({
   };
 
   const handleBulkDelete = async (selectedRows: YouthPopulationType[]) => {
-    const ids = selectedRows.map((row) => ({ id: row.id }));
-
-    const { success, error } = await optimisticUpdate(
-      "youth_population",
-      "delete",
-      ids as any,
-      data,
-      setData,
-      (item) => ({
-        id: item.id.toString(),
-        lga: item.lga,
-        totalPopulation: item.total_population,
-        youthPopulation: item.youth_population,
-        youthShare: item.youth_share,
-        maleYouth: item.male_youth,
-        femaleYouth: item.female_youth,
-        urbanYouth: item.urban_youth,
-        ruralYouth: item.rural_youth,
-      }),
-    );
-
-    if (success) {
-      toast({
-        title: "Success",
-        description: `Successfully deleted ${selectedRows.length} ${selectedRows.length === 1 ? "entry" : "entries"}`,
+    const records = selectedRows.map((row) => ({
+      id: row.id,
+      version: row.version,
+    }));
+    const res = await bulkDeleteYouthPopulation(records);
+    if (res.success) {
+      toast("Success", {
+        description: `${res.deleted} record${res.deleted === 1 ? "" : "s"} deleted successfully.`,
+        richColors: true,
       });
-      // trackActivity("Delete", "Youth Population", `Bulk deleted ${selectedRows.length} entries`)
     } else {
-      toast({
-        variant: "destructive",
-        title: "Error deleting data",
-        description: error,
+      toast.error("Error", {
+        description: res.message,
+        richColors: true,
       });
     }
   };
@@ -90,7 +60,6 @@ export function YouthPopulationTable({
         columns={columns}
         data={youthPopulation}
         searchKey="lga"
-        // filename="youth-population-data"
         enableRowSelection={canEditData}
         onBulkDelete={handleBulkDelete}
       />
