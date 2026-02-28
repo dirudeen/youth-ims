@@ -62,6 +62,7 @@ export function YouthPopulationTable({
         searchKey="lga"
         enableRowSelection={canEditData}
         onBulkDelete={handleBulkDelete}
+        exportRoute="youth-population"
       />
 
       <YouthPopulationDialogs />
