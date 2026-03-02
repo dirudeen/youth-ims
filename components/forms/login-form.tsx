@@ -68,8 +68,8 @@ export function LoginForm({
         <CardHeader className="space-y-4 text-center pb-6">
           <div className="mx-auto w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg lg:hidden p-2">
             <Image
-              width={200}
-              height={200}
+              width={600}
+              height={600}
               src="/images/moys-logo.jpg"
               alt="Ministry of Youth and Sports Logo"
               className="w-full h-full object-contain rounded-full"
@@ -95,7 +95,7 @@ export function LoginForm({
                       control={form.control}
                       name="email"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="text-black">
                           <FormLabel>Email</FormLabel>
                           <FormControl>
                             <Input
@@ -115,7 +115,7 @@ export function LoginForm({
                         control={form.control}
                         name="password"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="text-black">
                             <FormLabel>Password</FormLabel>
                             <FormControl>
                               <Input

@@ -80,4 +80,41 @@ export const youthPopulation = pgTable(
   ],
 );
 
+export const youthWithDisabilities = pgTable(
+  "youth_with_disabilities",
+  {
+    id: serial("id").primaryKey(),
+
+    ageGroup: varchar("age_group", { length: 20 }).notNull(),
+
+    total: integer("total").notNull(),
+    male: integer("male").notNull(),
+    female: integer("female").notNull(),
+
+    urban: integer("urban").notNull(),
+    rural: integer("rural").notNull(),
+
+    seeing: integer("seeing").notNull(),
+    hearing: integer("hearing").notNull(),
+    physical: integer("physical").notNull(),
+    learning: integer("learning").notNull(),
+    selfcare: integer("selfcare").notNull(),
+    speech: integer("speech").notNull(),
+
+    version: integer("version").notNull().default(1),
+    ...timestamps,
+  },
+  (table) => [
+    // Age Group integrity
+    uniqueIndex("unique_age_group").on(table.ageGroup),
+    // Gender integrity
+    check("ywd_gender_sum_check", sql`male + female = total`),
+
+    // Location integrity
+    check("ywd_location_sum_check", sql`urban + rural = total`),
+  ],
+);
+
 export type YouthPopulationType = typeof youthPopulation.$inferSelect;
+export type YouthWithDisabilitiesType =
+  typeof youthWithDisabilities.$inferSelect;
