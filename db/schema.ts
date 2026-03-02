@@ -115,6 +115,36 @@ export const youthWithDisabilities = pgTable(
   ],
 );
 
+export const youthWithoutDisabilities = pgTable(
+  "youth_without_disabilities",
+  {
+    id: varchar("id", { length: 50 }).primaryKey(),
+
+    ageGroup: varchar("age_group", { length: 20 }).notNull(),
+
+    total: integer("total").notNull(),
+    male: integer("male").notNull(),
+    female: integer("female").notNull(),
+
+    urban: integer("urban").notNull(),
+    rural: integer("rural").notNull(),
+
+    version: integer("version").notNull().default(1),
+  },
+  (table) => [
+    // Logical uniqueness (same reasoning as previous table)
+    uniqueIndex("ywod_unique_age_group").on(table.ageGroup),
+
+    // Gender integrity
+    check("ywod_gender_sum_check", sql`male + female = total`),
+
+    // Location integrity
+    check("ywod_location_sum_check", sql`urban + rural = total`),
+  ],
+);
+
+export type YouthWithoutDisabilitiesType =
+  typeof youthWithoutDisabilities.$inferSelect;
 export type YouthPopulationType = typeof youthPopulation.$inferSelect;
 export type YouthWithDisabilitiesType =
   typeof youthWithDisabilities.$inferSelect;
