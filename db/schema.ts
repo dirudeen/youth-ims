@@ -118,7 +118,7 @@ export const youthWithDisabilities = pgTable(
 export const youthWithoutDisabilities = pgTable(
   "youth_without_disabilities",
   {
-    id: varchar("id", { length: 50 }).primaryKey(),
+    id: serial("id").primaryKey(),
 
     ageGroup: varchar("age_group", { length: 20 }).notNull(),
 
@@ -130,6 +130,7 @@ export const youthWithoutDisabilities = pgTable(
     rural: integer("rural").notNull(),
 
     version: integer("version").notNull().default(1),
+    ...timestamps,
   },
   (table) => [
     // Logical uniqueness (same reasoning as previous table)
