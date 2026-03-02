@@ -147,7 +147,7 @@ function YouthPopulationEditDialog() {
     });
 
     if (res.success) {
-      toast.success("Youth population added successfully.", {
+      toast.success("Youth population edited successfully.", {
         richColors: true,
       });
       console.log(res.data);

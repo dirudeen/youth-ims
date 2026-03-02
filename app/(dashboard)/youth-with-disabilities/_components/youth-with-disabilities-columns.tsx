@@ -25,13 +25,6 @@ export const getColumns = ({
 }: YouthWithDisabilitiesColumnsProps): ColumnDef<YouthWithDisabilitiesType>[] => {
   const columns: ColumnDef<YouthWithDisabilitiesType>[] = [
     {
-      accessorKey: "totalPopulation",
-      header: "Total Population",
-      cell: ({ row }) => {
-        return new Intl.NumberFormat().format(row.getValue("totalPopulation"));
-      },
-    },
-    {
       accessorKey: "ageGroup",
       header: "Age Group",
     },

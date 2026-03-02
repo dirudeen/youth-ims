@@ -6,6 +6,8 @@ import { YouthWithDisabilitiesDialogs } from "./youth-with-disabilities-dialogs"
 
 import type { YouthWithDisabilitiesType } from "@/db/schema";
 import { useYouthWithDisabilitiesStore } from "@/store/youth-with-disabilities-store";
+import { bulkDeleteYouthWithDisabilities } from "@/server/actions/youth-with-disabilities";
+import { toast } from "sonner";
 
 interface YouthWithDisabilitiesClientProps {
   youthWithDisabilities: YouthWithDisabilitiesType[];
@@ -31,18 +33,18 @@ export function YouthWithDisabilitiesTable({
       id: row.id,
       version: row.version,
     }));
-    // const res = await bulkDeleteYouthPopulation(records);
-    // if (res.success) {
-    //   toast("Success", {
-    //     description: `${res.deleted} record${res.deleted === 1 ? "" : "s"} deleted successfully.`,
-    //     richColors: true,
-    //   });
-    // } else {
-    //   toast.error("Error", {
-    //     description: res.message,
-    //     richColors: true,
-    //   });
-    // }
+    const res = await bulkDeleteYouthWithDisabilities(records);
+    if (res.success) {
+      toast.success("Success", {
+        description: `${res.deleted} record${res.deleted === 1 ? "" : "s"} deleted successfully.`,
+        richColors: true,
+      });
+    } else {
+      toast.error("Error", {
+        description: res.message,
+        richColors: true,
+      });
+    }
   };
 
   const columns = getColumns({

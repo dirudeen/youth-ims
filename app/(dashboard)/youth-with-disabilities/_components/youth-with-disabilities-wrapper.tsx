@@ -1,4 +1,4 @@
-import { getYouthPopulation } from "@/server/services/youth-population";
+import { getYouthWithDisabilities } from "@/server/services/youth-with-disabilities";
 import { Suspense } from "react";
 import { YouthWithDisabilitiesActions } from "./youth-with-disabilities-actions";
 import { YouthWithDisabilitiesTable } from "./youth-with-disabilities-table";
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export async function YouthWithDisabilitiesWrapper({ canEditData }: Props) {
-  // const data = await getYouthPopulation();
+  const data = await getYouthWithDisabilities();
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
@@ -20,7 +20,7 @@ export async function YouthWithDisabilitiesWrapper({ canEditData }: Props) {
       <Suspense fallback={<YouthWithDisabilitiesTableSkeleton />}>
         <YouthWithDisabilitiesTable
           canEditData={canEditData}
-          youthWithDisabilities={[]}
+          youthWithDisabilities={data}
         />
       </Suspense>
     </div>

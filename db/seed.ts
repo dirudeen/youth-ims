@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Client } from "pg";
-import { youthPopulation } from "./schema";
+import { youthPopulation, youthWithDisabilities } from "./schema";
 
 import {} from "./schema";
 import dotenv from "dotenv";
@@ -90,6 +90,37 @@ export const youthPopulationData = [
   },
 ];
 
+const youthWithDisabilitiesDummyData = [
+  {
+    ageGroup: "15-19",
+    total: 1468,
+    male: 735,
+    female: 733,
+    urban: 734,
+    rural: 734,
+    seeing: 450,
+    hearing: 423,
+    physical: 398,
+    learning: 365,
+    selfcare: 360,
+    speech: 505,
+  },
+  {
+    ageGroup: "20-24",
+    total: 1260,
+    male: 630,
+    female: 630,
+    urban: 630,
+    rural: 630,
+    seeing: 415,
+    hearing: 404,
+    physical: 411,
+    learning: 325,
+    selfcare: 313,
+    speech: 432,
+  },
+];
+
 const client = new Client({
   connectionString: process.env.DATABASE_URL!,
 });
@@ -103,11 +134,20 @@ async function main() {
   const data = await db
     .insert(youthPopulation)
     .values(youthPopulationData)
+    .onConflictDoNothing()
     .returning();
   console.log("✔ Youth population inserted:", data.length);
 
-  console.log("🎉 DONE SEEDING!");
+  const youthWithDisabilitiesData = await db
+    .insert(youthWithDisabilities)
+    .values(youthWithDisabilitiesDummyData)
+    .returning();
+  console.log(
+    "✔ Youth with Disabilities inserted:",
+    youthWithDisabilitiesData.length,
+  );
 
+  console.log("🎉 DONE SEEDING!");
   await client.end();
 }
 
