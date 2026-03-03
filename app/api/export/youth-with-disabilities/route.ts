@@ -1,7 +1,7 @@
 export const runtime = "nodejs";
 
 import { db } from "@/db";
-import { youthPopulation, youthWithDisabilities } from "@/db/schema";
+import { youthWithDisabilities } from "@/db/schema";
 import { youthWithDisabilitiesExportConfig } from "@/feature/export/config";
 import { exportData } from "@/lib/exporter/export-engine";
 
