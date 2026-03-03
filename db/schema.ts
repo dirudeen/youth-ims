@@ -144,6 +144,86 @@ export const youthWithoutDisabilities = pgTable(
   ],
 );
 
+export const humanTrafficking = pgTable(
+  "human_trafficking",
+  {
+    id: serial("id").primaryKey(),
+
+    year: integer("year").notNull(),
+
+    total: integer("total").notNull(),
+    male: integer("male").notNull(),
+    female: integer("female").notNull(),
+
+    ageGroup: varchar("age_group", { length: 20 }).notNull(),
+
+    lga: varchar("lga", { length: 100 }).notNull(),
+
+    version: integer("version").notNull().default(1),
+    ...timestamps,
+  },
+  (table) => [
+    // Prevent duplicate records for same demographic slice
+    uniqueIndex("ht_unique_year_lga_agegroup").on(
+      table.year,
+      table.lga,
+      table.ageGroup,
+    ),
+
+    // Gender integrity
+    check("ht_gender_sum_check", sql`male + female = total`),
+
+    // Prevent negative values
+    check(
+      "ht_non_negative_check",
+      sql`
+          total >= 0 AND
+          male >= 0 AND
+          female >= 0
+        `,
+    ),
+  ],
+);
+
+export const youthMigration = pgTable(
+  "youth_migration",
+  {
+    id: serial("id").primaryKey(),
+
+    year: integer("year").notNull(),
+
+    total: integer("total").notNull(),
+    male: integer("male").notNull(),
+    female: integer("female").notNull(),
+
+    origin: varchar("origin", { length: 100 }).notNull(),
+    destination: varchar("destination", { length: 100 }).notNull(),
+
+    version: integer("version").notNull().default(1),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("ym_unique_year_origin_destination").on(
+      table.year,
+      table.origin,
+      table.destination,
+    ),
+
+    check("ym_gender_sum_check", sql`male + female = total`),
+    check(
+      "ym_non_negative_check",
+      sql`
+          total >= 0 AND
+          male >= 0 AND
+          female >= 0
+        `,
+    ),
+  ],
+);
+
+export type YouthMigrationType = typeof youthMigration.$inferSelect;
+export type HumanTraffickingType = typeof humanTrafficking.$inferSelect;
+
 export type YouthWithoutDisabilitiesType =
   typeof youthWithoutDisabilities.$inferSelect;
 export type YouthPopulationType = typeof youthPopulation.$inferSelect;
