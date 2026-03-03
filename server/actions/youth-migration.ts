@@ -1,33 +1,31 @@
 "use server";
 
 import { db } from "@/db";
-import { humanTrafficking } from "@/db/schema";
+import { youthMigration } from "@/db/schema";
 import { fail, ok } from "@/lib/action-result-helper";
 import { getServerSideSession } from "@/lib/auth-helper";
 import { and, DrizzleQueryError, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-type CreateHumanTraffickingInput = {
-  lga: string;
+type CreateYouthMigrationInput = {
   year: number;
   total: number;
   male: number;
   female: number;
-  ageGroup: string;
+  origin: string;
+  destination: string;
 };
 
-export async function createHumanTrafficking(
-  data: CreateHumanTraffickingInput,
-) {
+export async function createYouthMigration(data: CreateYouthMigrationInput) {
   const session = await getServerSideSession();
   if (!session) {
     throw new Error("Unauthorized");
   }
 
   try {
-    const [row] = await db.insert(humanTrafficking).values(data).returning();
+    const [row] = await db.insert(youthMigration).values(data).returning();
 
-    revalidatePath("/human-trafficking");
+    revalidatePath("/youth-migration");
     return ok(row);
   } catch (error: any) {
     console.error(error);
@@ -43,20 +41,18 @@ export async function createHumanTrafficking(
   }
 }
 
-type UpdateHumanTraffickingInput = {
+type UpdateYouthMigrationInput = {
   id: number;
-  lga: string;
   year: number;
   total: number;
   male: number;
   female: number;
-  ageGroup: string;
+  origin: string;
+  destination: string;
   version: number;
 };
 
-export async function updateHumanTrafficking(
-  data: UpdateHumanTraffickingInput,
-) {
+export async function updateYouthMigration(data: UpdateYouthMigrationInput) {
   const session = await getServerSideSession();
   if (!session) {
     throw new Error("Unauthorized");
@@ -64,20 +60,20 @@ export async function updateHumanTrafficking(
 
   try {
     const result = await db
-      .update(humanTrafficking)
+      .update(youthMigration)
       .set({
-        lga: data.lga,
         year: data.year,
         total: data.total,
         male: data.male,
         female: data.female,
-        ageGroup: data.ageGroup,
-        version: sql`${humanTrafficking.version} + 1`, // Increment version
+        origin: data.origin,
+        destination: data.destination,
+        version: sql`${youthMigration.version} + 1`, // Increment version
       })
       .where(
         and(
-          eq(humanTrafficking.id, data.id),
-          eq(humanTrafficking.version, data.version),
+          eq(youthMigration.id, data.id),
+          eq(youthMigration.version, data.version),
         ),
       )
       .returning();
@@ -85,7 +81,7 @@ export async function updateHumanTrafficking(
     if (result.length === 0) {
       return fail("Record modified by another user.");
     }
-    revalidatePath("/human-trafficking");
+    revalidatePath("/youth-migration");
     return ok(result[0]);
   } catch (error) {
     console.error(error);
@@ -93,7 +89,7 @@ export async function updateHumanTrafficking(
   }
 }
 
-export async function deleteHumanTrafficking(data: {
+export async function deleteYouthMigration(data: {
   id: number;
   version: number;
 }) {
@@ -104,21 +100,19 @@ export async function deleteHumanTrafficking(data: {
 
   const { id, version } = data;
 
-  const whereClause = version
-    ? and(eq(humanTrafficking.id, id), eq(humanTrafficking.version, version))
-    : eq(humanTrafficking.id, id);
-
   try {
     const result = await db
-      .delete(humanTrafficking)
-      .where(whereClause)
+      .delete(youthMigration)
+      .where(
+        and(eq(youthMigration.id, id), eq(youthMigration.version, version)),
+      )
       .returning();
 
     if (result.length === 0) {
       return fail("Record modified by another user.");
     }
 
-    revalidatePath("/human-trafficking");
+    revalidatePath("/youth-migration");
 
     return ok("Record deleted successfully.");
   } catch (error) {
@@ -127,13 +121,13 @@ export async function deleteHumanTrafficking(data: {
   }
 }
 
-type BulkDeleteHumanTraffickingInput = {
+type BulkDeleteYouthMigrationInput = {
   id: number;
   version: number;
 }[];
 
-export async function bulkDeleteHumanTrafficking(
-  records: BulkDeleteHumanTraffickingInput,
+export async function bulkDeleteYouthMigration(
+  records: BulkDeleteYouthMigrationInput,
 ) {
   const session = await getServerSideSession();
   if (!session) {
@@ -153,14 +147,14 @@ export async function bulkDeleteHumanTrafficking(
 
       for (const record of records) {
         const deleted = await tx
-          .delete(humanTrafficking)
+          .delete(youthMigration)
           .where(
             and(
-              eq(humanTrafficking.id, record.id),
-              eq(humanTrafficking.version, record.version),
+              eq(youthMigration.id, record.id),
+              eq(youthMigration.version, record.version),
             ),
           )
-          .returning({ id: humanTrafficking.id });
+          .returning({ id: youthMigration.id });
 
         if (deleted.length > 0) {
           deletedCount++;
@@ -179,7 +173,7 @@ export async function bulkDeleteHumanTrafficking(
         deleted: result,
       };
     }
-    revalidatePath("/human-trafficking");
+    revalidatePath("/youth-migration");
 
     return {
       success: true,
