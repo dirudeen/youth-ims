@@ -252,101 +252,104 @@ export const sportsFinancing = pgTable(
   ],
 );
 
-export const nediPrograms = pgTable(
-  "nedi_programs",
+export const piaStudents = pgTable(
+  "pia_students",
   {
-    id: varchar("id", { length: 50 }).primaryKey(),
+    id: serial("id").primaryKey(),
 
-    programName: varchar("program_name", { length: 255 }).notNull(),
+    department: varchar("department", { length: 255 }).notNull(),
+    year: varchar("year", { length: 50 }).notNull(),
 
-    targetGroup: varchar("target_group", { length: 255 }).notNull(),
-
-    beneficiaries: integer("beneficiaries").notNull(),
-
-    serviceType: varchar("service_type", { length: 255 }).notNull(),
-
-    description: varchar("description", { length: 1000 }).notNull(),
-
-    status: varchar("status", { length: 50 }).notNull(),
-
-    location: varchar("location", { length: 255 }).notNull(),
-
-    maleParticipants: integer("male_participants"),
-    femaleParticipants: integer("female_participants"),
-
-    startDate: varchar("start_date", { length: 50 }).notNull(),
-    endDate: varchar("end_date", { length: 50 }),
-
-    implementingPartner: varchar("implementing_partner", {
-      length: 255,
-    }),
-
-    fundingSource: varchar("funding_source", {
-      length: 255,
-    }),
-
+    male: integer("male").notNull(),
+    female: integer("female").notNull(),
+    enrolled: integer("enrolled").notNull(),
+    graduated: integer("graduated").notNull(),
     version: integer("version").notNull().default(1),
+
+    ...timestamps,
   },
-  (table) => {
-    return {
-      // Logical uniqueness of a program instance
-      uniqueProgramInstance: uniqueIndex("nedi_unique_program_instance").on(
-        table.programName,
-        table.startDate,
-        table.location,
-      ),
-
-      // Prevent negative values
-      nonNegativeCheck: check(
-        "nedi_non_negative_check",
-        sql`
-          beneficiaries >= 0 AND
-          (male_participants IS NULL OR male_participants >= 0) AND
-          (female_participants IS NULL OR female_participants >= 0)
-        `,
-      ),
-
-      // If both male and female provided, must equal beneficiaries
-      participantSumCheck: check(
-        "nedi_participant_sum_check",
-        sql`
-          (
-            male_participants IS NULL OR
-            female_participants IS NULL
-          )
-          OR
-          (male_participants + female_participants = beneficiaries)
-        `,
-      ),
-
-      // End date must not be before start date
-      dateOrderCheck: check(
-        "nedi_date_order_check",
-        sql`
-          end_date IS NULL
-          OR
-          end_date >= start_date
-        `,
-      ),
-
-      // Restrict allowed status values
-      validStatusCheck: check(
-        "nedi_valid_status_check",
-        sql`
-          status IN (
-            'Planned',
-            'Ongoing',
-            'Completed',
-            'Suspended',
-            'Cancelled'
-          )
-        `,
-      ),
-    };
-  },
+  (table) => [
+    uniqueIndex("pia_students_unique_department_year").on(
+      table.department,
+      table.year,
+    ),
+    check(
+      "pia_students_non_negative_check",
+      sql`
+        male >= 0 AND
+        female >= 0 AND
+        enrolled >= 0 AND
+        graduated >= 0
+      `,
+    ),
+    check(
+      "pia_students_gender_sum_check",
+      sql`${table.male} + ${table.female} = ${table.enrolled}`,
+    ),
+    check(
+      "pia_students_graduated_check",
+      sql`${table.graduated} <= ${table.enrolled}`,
+    ),
+  ],
 );
 
+// export const nediPrograms = pgTable(
+//   "nedi_programs",
+//   {
+//     id: serial("id").primaryKey(),
+//     programName: varchar("program_name", { length: 255 }).notNull(),
+
+//     targetGroup: varchar("target_group", { length: 255 }).notNull(),
+
+//     beneficiaries: integer("beneficiaries").notNull(),
+
+//     serviceType: varchar("service_type", { length: 255 }).notNull(),
+
+//     description: varchar("description", { length: 1000 }).notNull(),
+
+//     status: varchar("status", { length: 50 }).notNull(),
+
+//     location: varchar("location", { length: 255 }).notNull(),
+
+//     maleParticipants: integer("male_participants"),
+//     femaleParticipants: integer("female_participants"),
+
+//     startDate: varchar("start_date", { length: 50 }).notNull(),
+//     endDate: varchar("end_date", { length: 50 }),
+
+//     implementingPartner: varchar("implementing_partner", {
+//       length: 255,
+//     }),
+
+//     fundingSource: varchar("funding_source", {
+//       length: 255,
+//     }),
+
+//     version: integer("version").notNull().default(1),
+//     ...timestamps,
+//   },
+//   (table) => [
+//     // Logical uniqueness of a program instance
+//     uniqueIndex("nedi_unique_program_instance").on(
+//       table.programName,
+//       table.startDate,
+//       table.location,
+//     ),
+
+//     // Prevent negative values
+//     check(
+//       "nedi_non_negative_check",
+//       sql`
+//           beneficiaries >= 0 AND
+//           (male_participants IS NULL OR male_participants >= 0) AND
+//           (female_participants IS NULL OR female_participants >= 0)
+//         `,
+//     ),
+//   ],
+// );
+
 export type SportsFinancingType = typeof sportsFinancing.$inferSelect;
+export type PiaStudentsType = typeof piaStudents.$inferSelect;
 
 export type YouthMigrationType = typeof youthMigration.$inferSelect;
 export type HumanTraffickingType = typeof humanTrafficking.$inferSelect;
