@@ -9,5 +9,5 @@ export const getServerSideSession = cache(async () => {
 });
 
 export function canEditDataHelperFn(role: string) {
-  return role === "admin" || role === "dataEntry";
+  return role === "admin" || role === "dataEntry" || role === "data_entry";
 }

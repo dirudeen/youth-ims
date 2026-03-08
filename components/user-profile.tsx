@@ -80,7 +80,7 @@ export function UserProfile({ currentUser }: { currentUser: CurrentUser }) {
                 <span className="text-xs text-gray-500">Role:</span>
                 <RoleBadge
                   role={
-                    (currentUser.role as "admin" | "data_entry" | "viewer") ||
+                    (currentUser.role as "admin" | "data-entry" | "viewer") ||
                     "viewer"
                   }
                 />
