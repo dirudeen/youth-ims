@@ -119,12 +119,12 @@ export function UserProfile({ currentUser }: { currentUser: CurrentUser }) {
           </Link>
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="cursor-pointer" asChild>
+        {/* <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href="/settings" className="flex gap-2">
             <Settings className="mr-2 h-4 w-4" />
             <span>Account Settings</span>
           </Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
 
         <DropdownMenuSeparator />
 

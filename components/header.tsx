@@ -17,10 +17,10 @@ export function Header() {
       </div>
       <div className="flex items-center gap-2">
         <ThemeToggle />
-        <Button variant="ghost" size="icon" className="h-9 w-9">
+        {/* <Button variant="ghost" size="icon" className="h-9 w-9">
           <Bell className="h-4 w-4" />
           <span className="sr-only">Notifications</span>
-        </Button>
+        </Button> */}
         <Suspense fallback={<Skeleton className="h-9 w-9 rounded-full" />}>
           <UserProfileWrapper />
         </Suspense>

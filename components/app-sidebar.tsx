@@ -114,12 +114,12 @@ const navigationItems = [
     icon: DollarSign,
     iconColor: "text-emerald-500",
   },
-  {
-    title: "Activity Log",
-    url: "/activity-log",
-    icon: FileText,
-    iconColor: "text-gray-500",
-  },
+  // {
+  //   title: "Activity Log",
+  //   url: "/activity-log",
+  //   icon: FileText,
+  //   iconColor: "text-gray-500",
+  // },
   {
     title: "User Management",
     url: "/user-management",
