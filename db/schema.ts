@@ -335,9 +335,59 @@ export const nediPrograms = pgTable(
   ],
 );
 
+export const nyssPrograms = pgTable(
+  "nyss_programs",
+  {
+    id: serial("id").primaryKey(),
+    programName: varchar("program_name", { length: 255 }).notNull(),
+    institution: varchar("institution", { length: 255 }),
+    year: integer("year").notNull(),
+    region: varchar("region", { length: 255 }),
+    sector: varchar("sector", { length: 255 }),
+    totalGraduates: integer("total_graduates"),
+    maleGraduates: integer("male_graduates"),
+    femaleGraduates: integer("female_graduates"),
+    employmentRate: decimal("employment_rate", { precision: 5, scale: 2 }),
+    version: integer("version").notNull().default(1),
+    ...timestamps,
+  },
+  (table) => [
+    check(
+      "nyss_programs_non_negative_check",
+      sql`
+      coalesce(${table.totalGraduates}, 0) >= 0 AND
+      coalesce(${table.maleGraduates}, 0) >= 0 AND
+      coalesce(${table.femaleGraduates}, 0) >= 0
+    `,
+    ),
+  ],
+);
+
+export const nyssGraduates = pgTable(
+  "nyss_graduates",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 255 }).notNull(),
+    age: integer("age").notNull(),
+    gender: varchar("gender", { length: 255 }).notNull(),
+    region: varchar("region", { length: 255 }).notNull(),
+    trainingProgram: varchar("training_program", { length: 255 }).notNull(),
+    graduationYear: varchar("graduation_year", { length: 4 }).notNull(),
+    employmentStatus: varchar("employment_status", { length: 255 }).notNull(),
+    sector: varchar("sector", { length: 255 }).notNull(),
+    version: integer("version").notNull().default(1),
+    ...timestamps,
+  },
+  (table) => [
+    check("nyss_graduates_non_negative_age_check", sql`${table.age} >= 0`),
+  ],
+);
+
 export type SportsFinancingType = typeof sportsFinancing.$inferSelect;
 export type PiaStudentsType = typeof piaStudents.$inferSelect;
 export type NediProgramsType = typeof nediPrograms.$inferSelect;
+export type NyssProgramsType = typeof nyssPrograms.$inferSelect;
+export type NyssGraduatesType = typeof nyssGraduates.$inferSelect;
 
 export type YouthMigrationType = typeof youthMigration.$inferSelect;
 export type HumanTraffickingType = typeof humanTrafficking.$inferSelect;

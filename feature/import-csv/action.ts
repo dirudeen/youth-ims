@@ -4,6 +4,8 @@ import { importSpreadsheet } from "@/lib/importer/import-engine";
 import {
   humanTraffickingImportConfig,
   nediProgramsImportConfig,
+  nyssGraduatesImportConfig,
+  nyssProgramsImportConfig,
   youthMigrationImportConfig,
   youthPopulationImportConfig,
   youthWithDisabilitiesImportConfig,
@@ -67,5 +69,25 @@ export async function importNediProgramsData(formData: FormData) {
     file,
     config: nediProgramsImportConfig,
     path: "/nedi-programs",
+  });
+}
+
+export async function importNyssProgramsData(formData: FormData) {
+  const file = formData.get("file") as File;
+
+  return importSpreadsheet({
+    file,
+    config: nyssProgramsImportConfig,
+    path: "/nyss",
+  });
+}
+
+export async function importNyssGraduatesData(formData: FormData) {
+  const file = formData.get("file") as File;
+
+  return importSpreadsheet({
+    file,
+    config: nyssGraduatesImportConfig,
+    path: "/nyss",
   });
 }

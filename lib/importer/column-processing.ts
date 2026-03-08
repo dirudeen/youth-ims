@@ -42,5 +42,7 @@ export function processColumns(
       delete processed[key];
     }
   }
+
+  console.log(processed);
   return processed;
 }

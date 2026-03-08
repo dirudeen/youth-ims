@@ -5,6 +5,8 @@ import { NediProgramsTable } from "./nedi-programs-table";
 import { NediProgramsTableSkeleton } from "./nedi-programs-table-skeleton";
 import { NediProgramsType } from "@/db/schema";
 
+export const revalidate = 60;
+
 interface Props {
   canEditData: boolean;
 }

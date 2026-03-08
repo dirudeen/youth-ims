@@ -94,3 +94,34 @@ export const nediProgramsExportConfig = {
 
   excludeFields: [],
 };
+
+export const nyssProgramsExportConfig = {
+  columns: [
+    { key: "programName", header: "Program Name", required: true },
+    { key: "institution", header: "Institution", required: true },
+    { key: "year", header: "Year", required: true },
+    { key: "region", header: "Region", required: true },
+    { key: "sector", header: "Sector", required: true },
+    { key: "totalGraduates", header: "Total Graduates" },
+    { key: "maleGraduates", header: "Male Graduates" },
+    { key: "femaleGraduates", header: "Female Graduates" },
+    { key: "employmentRate", header: "Employment Rate" },
+  ] as const,
+
+  excludeFields: [],
+};
+
+export const nyssGraduatesExportConfig = {
+  columns: [
+    { key: "name", header: "Name", required: true },
+    { key: "age", header: "Age", required: true },
+    { key: "gender", header: "Gender", required: true },
+    { key: "region", header: "Region", required: true },
+    { key: "trainingProgram", header: "Training Program", required: true },
+    { key: "graduationYear", header: "Graduation Year", required: true },
+    { key: "employmentStatus", header: "Employment Status", required: true },
+    { key: "sector", header: "Sector", required: true },
+  ] as const,
+
+  excludeFields: [],
+};

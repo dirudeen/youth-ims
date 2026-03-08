@@ -2,6 +2,8 @@ import { z } from "zod";
 import {
   humanTrafficking,
   nediPrograms,
+  nyssGraduates,
+  nyssPrograms,
   youthMigration,
   youthPopulation,
   youthWithDisabilities,
@@ -193,6 +195,8 @@ function normalizeStatus(value: unknown) {
 }
 
 function normalizeDate(value: unknown) {
+  console.log(value);
+
   if (value === null || value === undefined || value === "") return null;
 
   if (value instanceof Date) {
@@ -200,7 +204,9 @@ function normalizeDate(value: unknown) {
   }
 
   const date = new Date(String(value));
-  return Number.isNaN(date.getTime()) ? value : date;
+  console.log(date);
+  return date;
+  // return Number.isNaN(date.getTime()) ? value : date;
 }
 
 export const nediProgramsImportConfig: ImportConfig<any> = {
@@ -247,7 +253,10 @@ export const nediProgramsImportConfig: ImportConfig<any> = {
     },
     startDate: {
       type: "required",
-      transform: normalizeDate,
+      transform: (value) => {
+        console.log(value);
+        return value;
+      },
     },
     endDate: {
       type: "optional",
@@ -273,9 +282,112 @@ export const nediProgramsImportConfig: ImportConfig<any> = {
     location: z.string().min(1),
     maleParticipants: z.number().int().nonnegative().nullable().optional(),
     femaleParticipants: z.number().int().nonnegative().nullable().optional(),
-    startDate: z.coerce.date(),
-    endDate: z.coerce.date().nullable().optional(),
+    startDate: z.any(),
+    endDate: z.any().nullable().optional(),
     implementingPartner: z.string().min(1),
     fundingSource: z.string().min(1),
+  }),
+};
+
+export const nyssProgramsImportConfig: ImportConfig<any> = {
+  table: nyssPrograms,
+  conflictStrategy: "error",
+  columns: {
+    programName: {
+      type: "required",
+      transform: (value) => String(value ?? "").trim(),
+    },
+    institution: {
+      type: "required",
+      transform: (value) => String(value ?? "").trim(),
+    },
+    year: {
+      type: "required",
+      transform: normalizeInt,
+    },
+    region: {
+      type: "required",
+      transform: (value) => String(value ?? "").trim(),
+    },
+    sector: {
+      type: "required",
+      transform: (value) => String(value ?? "").trim(),
+    },
+    totalGraduates: {
+      type: "optional",
+      transform: normalizeInt,
+    },
+    maleGraduates: {
+      type: "optional",
+      transform: normalizeInt,
+    },
+    femaleGraduates: {
+      type: "optional",
+      transform: normalizeInt,
+    },
+    employmentRate: {
+      type: "optional",
+      transform: (value) => String(Number(value ?? 0)),
+    },
+  },
+  schema: z.object({
+    programName: z.string().min(1),
+    institution: z.string().min(1),
+    year: z.number().int(),
+    region: z.string().min(1),
+    sector: z.string().min(1),
+    totalGraduates: z.number().int().optional(),
+    maleGraduates: z.number().int().optional(),
+    femaleGraduates: z.number().int().optional(),
+    employmentRate: z.string().optional(),
+  }),
+};
+
+export const nyssGraduatesImportConfig: ImportConfig<any> = {
+  table: nyssGraduates,
+  conflictStrategy: "error",
+  columns: {
+    name: {
+      type: "required",
+      transform: (value) => String(value ?? "").trim(),
+    },
+    age: {
+      type: "required",
+      transform: normalizeInt,
+    },
+    gender: {
+      type: "required",
+      transform: (value) => String(value ?? "").trim(),
+    },
+    region: {
+      type: "required",
+      transform: (value) => String(value ?? "").trim(),
+    },
+    trainingProgram: {
+      type: "required",
+      transform: (value) => String(value ?? "").trim(),
+    },
+    graduationYear: {
+      type: "required",
+      transform: (value) => String(value ?? "").trim(),
+    },
+    employmentStatus: {
+      type: "required",
+      transform: (value) => String(value ?? "").trim(),
+    },
+    sector: {
+      type: "required",
+      transform: (value) => String(value ?? "").trim(),
+    },
+  },
+  schema: z.object({
+    name: z.string().min(1),
+    age: z.number().int(),
+    gender: z.string().min(1),
+    region: z.string().min(1),
+    trainingProgram: z.string().min(1),
+    graduationYear: z.string().min(1),
+    employmentStatus: z.string().min(1),
+    sector: z.string().min(1),
   }),
 };
