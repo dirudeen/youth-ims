@@ -70,6 +70,8 @@ function UserCreateDialog() {
         richColors: true,
       });
     }
+
+    form.reset();
   }
 
   return (

@@ -3,9 +3,15 @@ import { auth } from "../auth";
 import { cache } from "react";
 
 export const getServerSideSession = cache(async () => {
-  return await auth.api.getSession({
+  const session = await auth.api.getSession({
     headers: await headers(),
   });
+
+  if (!session?.user.emailVerified) {
+    return null;
+  }
+
+  return session;
 });
 
 export function canEditDataHelperFn(role: string) {

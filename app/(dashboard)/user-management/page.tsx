@@ -1,5 +1,3 @@
-import { AuthCheck } from "@/components/auth-check";
-import { UserManagementClient } from "@/components/user-management-client";
 import { canEditDataHelperFn, getServerSideSession } from "@/lib/auth-helper";
 import { redirect } from "next/navigation";
 import { UserManagementWrapper } from "./_components/user-management-wrapper";
@@ -8,11 +6,5 @@ export default async function UserManagementPage() {
   const session = await getServerSideSession();
   if (!session) redirect("/login");
   const canEditData = canEditDataHelperFn(session.user.role as string);
-  return (
-    <UserManagementWrapper canEditData={canEditData} />
-
-    // <AuthCheck requireRole="admin">
-    //   <UserManagementClient />
-    // </AuthCheck>
-  );
+  return <UserManagementWrapper canEditData={canEditData} />;
 }

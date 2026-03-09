@@ -13,10 +13,13 @@ Complete this checklist before deploying the Youth IMS to production.
 
 ## Environment Variables
 
-- [ ] `NEXT_PUBLIC_SUPABASE_URL` is set
-- [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY` is set
-- [ ] `SUPABASE_SERVICE_ROLE_KEY` is set (if using server-side operations)
-- [ ] `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` is set for development
+- [ ] `DATABASE_URL` is set
+- [ ] `BETTER_AUTH_SECRET` is set
+- [ ] `BETTER_AUTH_URL` is set
+- [ ] `NEXT_PUBLIC_BETTER_AUTH_URL` is set
+- [ ] `RESEND_API_KEY` is set
+- [ ] `EMAIL_SENDER_NAME` is set
+- [ ] `EMAIL_SENDER_ADDRESS` is set
 
 ## Security
 

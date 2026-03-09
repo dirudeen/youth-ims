@@ -1,5 +1,5 @@
 -- =====================================================
--- POPULATE ALL EMPTY TABLES IN SUPABASE DATABASE
+-- POPULATE ALL EMPTY TABLES IN DATABASE
 -- =====================================================
 -- This script populates all empty tables with sample data
 -- Run this in Supabase SQL Editor

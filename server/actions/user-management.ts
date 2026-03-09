@@ -26,6 +26,8 @@ export async function createUser(data: CreateUserInput) {
   }
 
   try {
+    const requestHeaders = await headers();
+
     const newUser = await auth.api.createUser({
       body: {
         email: data.email,
@@ -33,9 +35,15 @@ export async function createUser(data: CreateUserInput) {
         name: data.name,
         role: data.role as "admin" | "data_entry" | "viewer",
       },
-      headers: await headers(),
+      headers: requestHeaders,
     });
-    console.log(newUser);
+
+    await auth.api.sendVerificationEmail({
+      body: {
+        email: data.email,
+      },
+    });
+
     revalidatePath("/user-management");
     return ok(newUser);
   } catch (error) {
