@@ -1,1 +1,0 @@
-pg_dump -U myuser -h localhost -d mydatabase -F c -f /path/to/backup/mydatabase.backup
