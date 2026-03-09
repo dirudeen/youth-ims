@@ -1,10 +1,16 @@
 "use server";
 
+import crypto from "crypto";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { getServerSideSession } from "@/lib/auth-helper";
 import { fail, ok } from "@/lib/action-result-helper";
 import { headers } from "next/headers";
+import { Role } from "@/lib/types";
+import { db } from "@/db";
+import { verifications } from "@/auth-schema";
+import { env } from "@/env";
+import { Resend } from "resend";
 
 type CreateUserInput = {
   name: string;
@@ -33,15 +39,21 @@ export async function createUser(data: CreateUserInput) {
         email: data.email,
         password: data.password,
         name: data.name,
-        role: data.role as "admin" | "data_entry" | "viewer",
+        role: data.role as Role,
       },
       headers: requestHeaders,
     });
 
-    await auth.api.sendVerificationEmail({
-      body: {
-        email: data.email,
-      },
+    const tokenRes = await generateAndStoreToken({ userId: newUser.user.id });
+    if (!tokenRes.success) {
+      return fail("An error occurred while generating and storing the token.");
+    }
+
+    const token = tokenRes.data;
+    await sendInviteEmail({
+      email: newUser.user.email,
+      token,
+      name: newUser.user.name,
     });
 
     revalidatePath("/user-management");
@@ -77,11 +89,12 @@ export async function updateUser(data: UpdateUserInput) {
         data: {
           name: data.name,
           email: data.email,
-          role: data.role as "admin" | "data_entry" | "viewer",
+          role: data.role as Role,
         },
       },
       headers: await headers(),
     });
+
     revalidatePath("/user-management");
     return ok(updatedUser);
   } catch (error) {
@@ -117,5 +130,57 @@ export async function deleteUser(data: DeleteUserInput) {
   } catch (error) {
     console.error(error);
     return fail("An error occurred while deleting the user.");
+  }
+}
+
+async function generateAndStoreToken({ userId }: { userId: string }) {
+  const tokenSecret = crypto.randomBytes(32).toString("hex");
+  const tokenExpires = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hours
+
+  try {
+    await db.insert(verifications).values({
+      identifier: userId,
+      value: tokenSecret,
+      expiresAt: tokenExpires,
+      id: crypto.randomBytes(32).toString("hex"),
+    });
+    return ok(tokenSecret);
+  } catch (error) {
+    console.error(error);
+    return fail("An error occurred while generating and storing the token.");
+  }
+}
+
+const baseUrl =
+  process.env.NODE_ENV === "production"
+    ? "https://doysmoys.gov.gm"
+    : "http://localhost:3000";
+
+async function sendInviteEmail({
+  email,
+  token,
+  name,
+}: {
+  email: string;
+  token: string;
+  name: string;
+}) {
+  const verifyUrl = `https://${baseUrl}/verify-email?token=${token}`;
+
+  try {
+    const resend = new Resend(env.RESEND_API_KEY);
+    await resend.emails.send({
+      from: `${env.EMAIL_SENDER_NAME} <${env.EMAIL_SENDER_ADDRESS}>`,
+      to: email,
+      subject: "You have been invited to join the Gambia Youth Data Dashboard",
+      html: `
+    <p>Hi ${name}, you've been invited to join the platform.</p>
+    <a href="${verifyUrl}">Click here to verify your email & get started</a>
+    <p>This link expires in 24 hours.</p>
+  `,
+    });
+  } catch (error) {
+    console.error(error);
+    return fail("An error occurred while sending the email.");
   }
 }
